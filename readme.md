@@ -18,7 +18,7 @@ Needed dependecies to proceeed
 3. Then generate osmium extract from planet exported osm:
    - using ```bounding box```:
    ```sh
-   osmium extract -b 20.121460,43.524655,29.750977,48.330691 planet-221031.osm.pbf romania.osm.pbf
+   osmium extract -b 20.121460,43.524655,29.750977,48.330691 planet-221031.osm.pbf -o romania.osm.pbf
    ```
    - using ```geojson```:
    ```sh
