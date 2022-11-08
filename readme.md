@@ -29,7 +29,7 @@ Needed dependecies to proceeed
 In order to extract OSRM data you need to have Docker installed. We make use of docker to run osrm tools agains the profiles we have defined here. Why?: to avoid compiling the software locally and installing dependencies that you might use only once.
 
 - 🚊 TRAM profile
-Work with osrm to create custom routing extractws
+Work with osrm to create custom routing extracts
 ```sh
 # copy osm to tram folder
 cp romania.osm.pbf tram/tram.osm.pbf
@@ -44,8 +44,22 @@ docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-contract /data/tram/tram.
 # run router
 docker run -t -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm ch /data/tram/tram.osrm
 ```
-- 🚍 BUS profile
-- 🚎 TROLLEY profile
+- 🚍 BUS profile && 🚎 TROLLEY profile
+Work with osrm to create custom routing extracts
+```sh
+# copy osm to tram folder
+cp romania.osm.pbf bus/bus.osm.pbf
+
+# remove existing cached osrm data
+rm -rf bus/bus.osrm*
+
+# extract data
+docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-extract -p /data/bus.lua /data/bus/bus.osm.pbf 
+docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-contract /data/bus/bus.osrm
+
+# run router
+docker run -t -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm ch /data/bus/bus.osrm
+```
 
 ___
 ## Debugging with GUI to see how it behaves
@@ -53,7 +67,7 @@ You will need 2 containers:
  - router
  - gui
 
-H
+
 ```sh
 # start router container
 docker run -t -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm ch /data/tram/tram.osrm
