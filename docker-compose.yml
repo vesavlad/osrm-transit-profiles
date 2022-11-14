@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  osrm-tram:
+    image: ghcr.io/project-osrm/osrm-backend
+    volumes:
+      - ./tram:/data
+    ports:
+      - "5001:5000"
+    command: osrm-routed --algorithm ch /data/tram.osrm
+
+  osrm-bus:
+    image: ghcr.io/project-osrm/osrm-backend
+    volumes:
+      - ./bus:/data
+    ports:
+      - "5002:5000"
+    command: osrm-routed --algorithm ch /data/bus.osrm

@@ -1,5 +1,2 @@
-tram/*
-bus/*
-rail/*
-subway/*
+*osrm*
 *.osm.pbf
