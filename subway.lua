@@ -93,7 +93,7 @@ function setup()
     
     -- tags disallow access to in combination with highway=service
     service_access_tag_blacklist = Set {
-      'private'
+      'private',
     },
     --
     restricted_access_tag_list = Set {
@@ -111,7 +111,9 @@ function setup()
     },
     --
     service_tag_forbidden = Set {
-      'emergency_access'
+      'emergency_access',
+      'yard',
+      'spur'
     },
     
     restrictions = Sequence {
@@ -148,24 +150,7 @@ function setup()
       'construction',
       'proposed'
     },
-    speeds = Sequence {
-      highway = {
-        motorway        = 90,
-        motorway_link   = 45,
-        trunk           = 85,
-        trunk_link      = 40,
-        primary         = 65,
-        primary_link    = 30,
-        secondary       = 55,
-        secondary_link  = 25,
-        tertiary        = 40,
-        tertiary_link   = 20,
-        unclassified    = 25,
-        residential     = 25,
-        living_street   = 10,
-        service         = 15
-      }
-    },
+    speeds = Sequence {},
     
     service_penalties = {
       alley             = 0.5,
@@ -208,118 +193,9 @@ function setup()
       movable = 5
     },
     
-    -- surface/trackype/smoothness
-    -- values were estimated from looking at the photos at the relevant wiki pages
-    
-    -- max speed for surfaces
-    surface_speeds = {
-      asphalt = nil,    -- nil mean no limit. removing the line has the same effect
-      concrete = nil,
-      ["concrete:plates"] = nil,
-      ["concrete:lanes"] = nil,
-      paved = nil,
-      
-      cement = 80,
-      compacted = 80,
-      fine_gravel = 80,
-      
-      paving_stones = 60,
-      metal = 60,
-      bricks = 60,
-      
-      grass = 40,
-      wood = 40,
-      sett = 40,
-      grass_paver = 40,
-      gravel = 40,
-      unpaved = 40,
-      ground = 40,
-      dirt = 40,
-      pebblestone = 40,
-      tartan = 40,
-      
-      cobblestone = 30,
-      clay = 30,
-      
-      earth = 20,
-      stone = 20,
-      rocky = 20,
-      sand = 20,
-      
-      mud = 10
-    },
-    
-    -- max speed for tracktypes
-    tracktype_speeds = {
-      grade1 =  60,
-      grade2 =  40,
-      grade3 =  30,
-      grade4 =  25,
-      grade5 =  20
-    },
-    
-    -- max speed for smoothnesses
-    smoothness_speeds = {
-      intermediate    =  80,
-      bad             =  40,
-      very_bad        =  20,
-      horrible        =  10,
-      very_horrible   =  5,
-      impassable      =  0
-    },
-    
-    -- http://wiki.openstreetmap.org/wiki/Speed_limits
-    maxspeed_table_default = {
-      urban = 50,
-      rural = 90,
-      trunk = 110,
-      motorway = 130
-    },
     
     -- List only exceptions
-    maxspeed_table = {
-      ["at:urban"] = 40,
-      ["at:rural"] = 100,
-      ["at:trunk"] = 100,
-      ["be:motorway"] = 120,
-      ["be-bru:rural"] = 70,
-      ["be-bru:urban"] = 30,
-      ["be-vlg:rural"] = 70,
-      ["by:urban"] = 60,
-      ["by:motorway"] = 110,
-      ["ca-on:rural"] = 80,
-      ["ch:rural"] = 80,
-      ["ch:trunk"] = 100,
-      ["ch:motorway"] = 120,
-      ["cz:trunk"] = 0,
-      ["cz:motorway"] = 0,
-      ["de:living_street"] = 7,
-      ["de:rural"] = 100,
-      ["de:motorway"] = 0,
-      ["dk:rural"] = 80,
-      ["es:trunk"] = 90,
-      ["fr:rural"] = 80,
-      ["gb:nsl_single"] = (60*1609)/1000,
-      ["gb:nsl_dual"] = (70*1609)/1000,
-      ["gb:motorway"] = (70*1609)/1000,
-      ["nl:rural"] = 80,
-      ["nl:trunk"] = 100,
-      ['no:rural'] = 80,
-      ['no:motorway'] = 110,
-      ['pl:rural'] = 100,
-      ['pl:trunk'] = 120,
-      ['pl:motorway'] = 140,
-      ["ro:trunk"] = 100,
-      ["ru:living_street"] = 20,
-      ["ru:urban"] = 60,
-      ["ru:motorway"] = 110,
-      ["uk:nsl_single"] = (60*1609)/1000,
-      ["uk:nsl_dual"] = (70*1609)/1000,
-      ["uk:motorway"] = (70*1609)/1000,
-      ['za:urban'] = 60,
-      ['za:rural'] = 100,
-      ["none"] = 140
-    },
+    maxspeed_table = {},
     
     relation_types = Sequence {
       "route"
@@ -375,9 +251,7 @@ function process_way(profile, way, result, relations)
   
   -- Remove everything that is not a rail, a turntable, a traverser
   if 
-    data.embedded_rails ~= 'tram' and
-    data.railway ~= 'tram' and
-    data.railway ~= 'light_rail' 
+    data.railway ~= 'subway'
     -- and
     -- data.railway ~= 'construction' 
   then
@@ -393,22 +267,20 @@ function process_way(profile, way, result, relations)
   end
 
 
-  if data.metro == 'yes' then
-     return
-  end
-
   local is_secondary = (
     data.service == "siding" or
     data.service == "spur" or
     data.service == "yard"
   )
 
-  local speed = ternary(is_secondary, profile.properties.secondary_speed, profile.properties.speed)
+  if (is_secondary) then
+    return
+  end
 
-  result.forward_speed = speed
-  result.backward_speed = speed
+  result.forward_speed = profile.properties.speed
+  result.backward_speed = profile.properties.speed
 
-  handlers = Sequence {
+  local handlers = Sequence {
     -- set the default mode for this profile. if can be changed later
     -- in case it turns we're e.g. on a ferry
     WayHandlers.default_mode,
@@ -443,7 +315,6 @@ function process_way(profile, way, result, relations)
     -- compute speed taking into account way type, maxspeed tags, etc.
     WayHandlers.speed,
     WayHandlers.maxspeed,
-    WayHandlers.surface,
     WayHandlers.penalties,
 
     -- compute class labels

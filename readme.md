@@ -38,11 +38,11 @@ cp romania.osm.pbf tram/tram.osm.pbf
 rm -rf tram/tram.osrm*
 
 # extract data
-docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-extract -p /data/tram.lua /data/tram/tram.osm.pbf 
-docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-contract /data/tram/tram.osrm
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-extract -p /data/tram.lua /data/tram/tram.osm.pbf 
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-contract /data/tram/tram.osrm
 
 # run router
-docker run -t -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm ch /data/tram/tram.osrm
+docker run -t -p 5000:5000 -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-routed --algorithm ch /data/tram/tram.osrm
 ```
 - 🚍 BUS profile && 🚎 TROLLEY profile
 Work with osrm to create custom routing extracts
@@ -54,11 +54,11 @@ cp romania.osm.pbf bus/bus.osm.pbf
 rm -rf bus/bus.osrm*
 
 # extract data
-docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-extract -p /data/bus.lua /data/bus/bus.osm.pbf 
-docker run -t -v "${PWD}:/data" osrm/osrm-backend osrm-contract /data/bus/bus.osrm
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-extract -p /data/bus.lua /data/bus/bus.osm.pbf 
+docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-contract /data/bus/bus.osrm
 
 # run router
-docker run -t -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm ch /data/bus/bus.osrm
+docker run -t -p 5000:5000 -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-routed --algorithm ch /data/bus/bus.osrm
 ```
 
 ___
@@ -70,7 +70,7 @@ You will need 2 containers:
 
 ```sh
 # start router container
-docker run -t -p 5000:5000 -v "${PWD}:/data" osrm/osrm-backend osrm-routed --algorithm ch /data/tram/tram.osrm
+docker run -t -p 5000:5000 -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-routed --algorithm ch /data/tram/tram.osrm
 # start gui for debugging
-docker run -p 9966:9966 osrm/osrm-frontend
+docker run -p 9966:9966 ghcr.io/project-osrm/osrm-frontend
 ```

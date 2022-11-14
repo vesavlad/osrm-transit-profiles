@@ -1,3 +1,5 @@
 tram/*
 bus/*
+rail/*
+subway/*
 *.osm.pbf
