@@ -1,8 +1,8 @@
 name: build and publish container image
 on:
   push:
-    tags:
-      - 'v*'
+    # tags:
+      # - 'v*'
 jobs:
   publish:
     runs-on: ubuntu-latest
