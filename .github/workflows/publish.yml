@@ -21,7 +21,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: otrro/osrm-${{ matrix.type }}:${{ matrix.osrm }}
+          images: otrro/osrm-${{ matrix.type }}-${{ matrix.osrm }}
 
       - name: Log in to Docker Registry
         uses: docker/login-action@v1
@@ -35,7 +35,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile
-          # tags:  ${{ steps.meta.outputs.tags  }}
+          tags:  ${{ steps.meta.outputs.tags  }}
           build-args: |
             osrm=${{ matrix.osrm }} 
             type=${{ matrix.type }}    
