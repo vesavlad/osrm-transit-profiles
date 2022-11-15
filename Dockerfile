@@ -17,5 +17,6 @@ RUN osrm-contract /data/map.osrm
 FROM ghcr.io/project-osrm/osrm-backend:v${osrm}
 ENV PORT=5000
 COPY --from=builder /data/map.osrm.* /data/
-CMD ["osrm-routed", "--port", "${PORT}", "--algorithm", "ch", "/data/map.osrm"]
-EXPOSE ${PORT}
+COPY run.sh /usr/local/bin/run.sh
+ENTRYPOINT ["run.sh"]
+EXPOSE $PORT
