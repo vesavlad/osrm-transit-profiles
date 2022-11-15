@@ -15,6 +15,7 @@ RUN osrm-contract /data/map.osrm
 
 # Building actual image from osrm data created earlier
 FROM ghcr.io/project-osrm/osrm-backend:v${osrm}
+ENV PORT=5000
 COPY --from=builder /data/map.osrm.* /data/
-CMD ["osrm-routed", "--algorithm", "ch", "/data/map.osrm"]
-EXPOSE 5000
+CMD ["osrm-routed", "--port", "${PORT}", "--algorithm", "ch", "/data/map.osrm"]
+EXPOSE ${PORT}
